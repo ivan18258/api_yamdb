@@ -12,8 +12,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
     serializer_class = TitlesSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ( 'year', 'category', 'genre', 'name')
-
+    filterset_fields = ('year', 'category', 'genre', 'name')
 
 
 class CategoriesViewSet(viewsets.ViewSetMixin):
