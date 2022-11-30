@@ -3,10 +3,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
-    class Roles(models.TextChoices):
-        ADMIN = 'admin', 'Администратор'
-        MODERATOR = 'moderator', 'Модератор'
-        USER = 'user', 'Аутентифицированный пользователь'
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+    ROLES = [
+        (ADMIN, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (USER, 'Аутентифицированный пользователь'),
+    ]
 
     email = models.EmailField(
         'Адрес электронной почты',
@@ -30,8 +34,8 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         'Роль',
         max_length=50,
-        choices=Roles.choices,
-        default=Roles.USER
+        choices=ROLES,
+        default=USER
     )
     bio = models.TextField(
         'О себе',
@@ -57,11 +61,11 @@ class CustomUser(AbstractUser):
 
     @property
     def is_moderator(self):
-        return self.role == self.Roles.MODERATOR
+        return self.role == self.MODERATOR
 
     @property
     def is_admin(self):
-        return self.role == self.Roles.ADMIN
+        return self.role == self.ADMIN
 
     def __str__(self):
         return self.username
