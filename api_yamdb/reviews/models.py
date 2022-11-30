@@ -42,11 +42,6 @@ class CustomUser(AbstractUser):
         null=True,
         blank=True
     )
-    confirmation_code = models.CharField(
-        'Код для идентификации',
-        max_length=150,
-        blank=True,
-    )
 
     class Meta:
         verbose_name = 'Пользователь'
