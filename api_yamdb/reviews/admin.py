@@ -3,7 +3,7 @@ from .models import Titles, Genres, Categories
 
 
 class TitlesAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'year', 'category')
+    list_display = ('pk', 'name', 'year', 'category_id')
     search_fields = ('name',)
     list_filter = ('year',)
     empty_value_display = '-пусто-'
