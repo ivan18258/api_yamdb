@@ -106,7 +106,7 @@ class Genres(models.Model):
         return self.name
 
 
-class Titles(models.Model):
+class Title(models.Model):
     name = models.CharField('Произведение', max_length=256)
     year = models.IntegerField(
         db_index=True,
@@ -138,8 +138,8 @@ class Titles(models.Model):
 
 
 class Review(models.Model):
-    title_id = models.ForeignKey(
-        Titles,
+    title = models.ForeignKey(
+        Title,
         on_delete=models.CASCADE,
         related_name='reviews'
     )
@@ -174,13 +174,13 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['pub_date']
-        unique_together = ['title_id', 'author']
+        unique_together = ['title', 'author']
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
 
 class Comment(models.Model):
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments'

@@ -4,21 +4,21 @@ from rest_framework.validators import UniqueValidator
 # from rest_framework.validators import UniqueTogetherValidato
 
 from reviews.models import (
-Categories,
-Genres,
-Titles,
-CustomUser,
-Comment,
-Review,
+    Categories,
+    Genres,
+    Title,
+    CustomUser,
+    Comment,
+    Review,
+)
 
-
-class TitlesSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
     genre = serializers.StringRelatedField(many=True, read_only=True)
     category = SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
         fields = ('id','name', 'year', 'description', 'genre', 'category',)
-        model = Titles
+        model = Title
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -102,16 +102,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
-        if self.context['request'].method != 'POST':
-            author = self.context['request'].user
-            title_id = self.context['view'].kwargs['title_id']
-        if Review.objects.filter(
-            author=author,
-            title_id=title_id
-        ).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставляли отзыв к этому произведению.'
-            )
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs['title_id']
+        if self.context['request'].method == 'POST':
+            if Review.objects.filter(
+                author=author,
+                title_id=title_id
+            ).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставляли отзыв к этому произведению.'
+                )
         return data
 
 

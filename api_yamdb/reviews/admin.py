@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Titles, Genres, Categories, CustomUser
+from .models import Title, Genres, Categories, CustomUser
 
 
 class TitlesAdmin(admin.ModelAdmin):
@@ -41,7 +41,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Titles, TitlesAdmin)
+admin.site.register(Title, TitlesAdmin)
 admin.site.register(Genres)
 admin.site.register(Categories)
 

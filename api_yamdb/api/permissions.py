@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from reviews.models import CustomUser
 
 
 class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
@@ -13,8 +14,8 @@ class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
-            or request.user.is_admin()
-            or request.user.is_moderator()
+            or request.user.role == CustomUser.ADMIN
+            or request.user.role == CustomUser.MODERATOR
         )
 
 class IsAdmin(permissions.BasePermission):
