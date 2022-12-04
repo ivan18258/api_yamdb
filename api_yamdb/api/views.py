@@ -11,6 +11,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import (
     TitlesSerializer,
+    CategoriesSerializer,
+    GenresSerializer
     SingUpSerializer,
     TokenSerializer,
     CustomUserSerializer,
@@ -33,9 +35,14 @@ class TitlesViewSet(viewsets.ModelViewSet):
     filterset_fields = ('year', 'category', 'genre', 'name')
 
 
-class CategoriesViewSet(viewsets.ViewSetMixin):
+class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
+    serializer_class = CategoriesSerializer
 
+
+class GenresViewSet(viewsets.ModelViewSet):
+    queryset = Categories.objects.all()
+    serializer_class = GenresSerializer
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -106,3 +113,4 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
