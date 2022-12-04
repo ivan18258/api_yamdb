@@ -2,7 +2,11 @@ requests==2.26.0
 django==2.2.16
 djangorestframework==3.12.4
 PyJWT==2.1.0
+djangorestframework-simplejwt
+django-filter
 pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
 django-filter==21.1
+djoser 
+djangorestframework-simplejwt==4.7.2
