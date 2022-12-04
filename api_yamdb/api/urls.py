@@ -21,10 +21,8 @@ routerV1.register('users', CustomUserViewSet)
 
 urlpatterns = [
     path('v1/', include(routerV1.urls)),
-    path('v1/', include('djoser.urls.jwt')),
-    path('v1/', include(routerV1.urls)),
-    path('v1/auth/singup/', RegisterView.as_view()),
+    path('v1/auth/signup/', RegisterView.as_view()),
     path('v1/auth/token/', ReceivingJWTToken.as_view()),
-    # path('v1/', include('djoser.urls.jwt')),
+
 
 ]
