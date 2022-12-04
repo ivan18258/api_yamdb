@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters, mixins, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+# from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import (
@@ -15,13 +15,19 @@ from .serializers import (
     TokenSerializer,
     CustomUserSerializer,
     CustomUserEditSerializer
-
 )
+from .permissions import (
+    IsAdmin,
+    IsAdminOrReadOnly,
+    AuthorAdminModeratorOrReadOnly
+)
+
 from reviews.models import Categories, Genres, Titles, CustomUser
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
+    permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitlesSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('year', 'category', 'genre', 'name')
@@ -32,7 +38,7 @@ class CategoriesViewSet(viewsets.ViewSetMixin):
 
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = SingUpSerializer(data=request.data)
@@ -53,7 +59,7 @@ class RegisterView(APIView):
 
 
 class ReceivingJWTToken(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
@@ -76,12 +82,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
+    permission_classes = (IsAdmin,)
 
     @action(
         methods=["get", "patch"],
         detail=False,
         url_path="me",
         serializer_class=CustomUserEditSerializer,
+        permission_classes=[permissions.IsAuthenticated],
     )
     def users_own_profile(self, request):
         user = request.user

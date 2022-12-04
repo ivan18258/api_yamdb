@@ -44,4 +44,4 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Titles, TitlesAdmin)
 admin.site.register(Genres)
 admin.site.register(Categories)
-admin.site.register(CustomUser)
+
