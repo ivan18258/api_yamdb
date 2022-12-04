@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.contrib import messages
-from .csv_model import (
+from .csv_model1 import (
     Categories_csv,
     Genres_csv,
     Titles_csv,
@@ -41,17 +41,17 @@ def upload_csv(request):
         if csv_file.multiple_chunks():
             messages.error(request, "Uploaded file is too big (%.2f MB). " % (csv_file.size/(1000*1000),))
             return HttpResponseRedirect(reverse("reviews:upload_csv"))
-        """file_data = csv_file.read().decode("utf-8")
+        file_data = csv_file.read().decode("utf-8")
         lines = file_data.split("\n")
         a=lines.pop(0)
 
         for line in lines:
-            fielde = line.split()
-            list_files[csv_file.name](fielde)"""
-        with csv_file.read().decode("utf-8") as f:
+            fielde = line.split(',')
+            list_files[csv_file.name](fielde)
+        """with csv_file.read().decode("utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                list_files[request.FILES["csv_file"].name].objects.bulk_create ([row])
+                list_files[request.FILES["csv_file"].name].objects.bulk_create ([row])"""
 
     except Exception as e:
         messages.error(request, "Unable to upload file. "+repr(e))

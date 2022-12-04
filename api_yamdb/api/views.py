@@ -8,11 +8,12 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import action
 # from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import LimitOffsetPagination
 
 from .serializers import (
     TitlesSerializer,
     CategoriesSerializer,
-    GenresSerializer
+    GenresSerializer,
     SingUpSerializer,
     TokenSerializer,
     CustomUserSerializer,
@@ -33,16 +34,21 @@ class TitlesViewSet(viewsets.ModelViewSet):
     serializer_class = TitlesSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('year', 'category', 'genre', 'name')
-
+    pagination_class = LimitOffsetPagination
+    
 
 class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
 
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = GenresSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
