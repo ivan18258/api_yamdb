@@ -17,7 +17,6 @@ class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
             or request.user.is_moderator()
         )
 
-
 class IsAdmin(permissions.BasePermission):
 
     message = 'У вас недостаточно прав!'
@@ -35,3 +34,4 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated and (
                     request.user.is_admin or request.user.is_superuser)))
+

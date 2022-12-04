@@ -8,18 +8,33 @@ from .views import (
     RegisterView,
     ReceivingJWTToken,
     CustomUserViewSet,
+    ReviewViewSet,
+    CommentViewSet
 )
+
+app_name = 'api'
 
 routerV1 = DefaultRouter()
 routerV1.register('titles', TitlesViewSet, basename='titles')
 routerV1.register('categories', CategoriesViewSet, basename='categories')
 routerV1.register('genres', GenresViewSet, basename='genres')
 routerV1.register('users', CustomUserViewSet)
+routerV1.register(
+    r'titles/(?P<title_id>[1-9]\d*)/reviews/(?P<review_id>[1-9]\d*)/comments',
+    CommentViewSet,
+    basename='comments'
+)
+routerV1.register(
+    r'titles/(?P<title_id>[1-9]\d*)/reviews',
+    ReviewViewSet,
+    basename='reviews'
+)
+
 
 urlpatterns = [
     path('v1/', include(routerV1.urls)),
     path('v1/auth/signup/', RegisterView.as_view()),
     path('v1/auth/token/', ReceivingJWTToken.as_view()),
-
-
+    path('v1/', include('djoser.urls')),
+    path('v1/', include('djoser.urls.jwt'))
 ]

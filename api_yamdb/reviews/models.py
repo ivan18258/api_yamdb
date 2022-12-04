@@ -1,5 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator
+)
 import datetime
 from django.contrib.auth.models import AbstractUser
 
@@ -68,15 +72,15 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-
 def validate_year(value):
     now = datetime.datetime.now()
     now_year = now.year
-    if value >int(now_year):
+    if value > int(now_year):
         raise ValidationError(
             ('Это произведение из будущего? Нет, не пойдет))'),
             params={'value': value},
         )
+
 
 class Categories(models.Model):
     name = models.CharField('Категория', max_length=200)
@@ -89,6 +93,7 @@ class Categories(models.Model):
     def __str__(self):
         return self.name
 
+
 class Genres(models.Model):
     name = models.CharField('Жанр', max_length=200)
     slug = models.SlugField(unique=True, max_length=200)
@@ -100,9 +105,13 @@ class Genres(models.Model):
     def __str__(self):
         return self.name
 
+
 class Titles(models.Model):
     name = models.CharField('Произведение', max_length=256)
-    year = models.IntegerField(db_index=True,validators=[validate_year])
+    year = models.IntegerField(
+        db_index=True,
+        validators=[validate_year]
+    )
     description = models.CharField('Описание', max_length=500, null=True)
     category = models.ForeignKey(
         Categories,
@@ -117,9 +126,8 @@ class Titles(models.Model):
         related_name='title_genre',
         blank=True,
         null=True,
-        
     )
-    
+
     class Meta:
         ordering = ("year",)
         verbose_name = 'Произведение'
@@ -128,54 +136,70 @@ class Titles(models.Model):
     def __str__(self):
         return self.name[:15]
 
+
 class Review(models.Model):
     title_id = models.ForeignKey(
         Titles,
         on_delete=models.CASCADE,
-        related_name="reviews"
+        related_name='reviews'
     )
     text = models.TextField()
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name="reviews"
+        related_name='reviews'
     )
     pub_date = models.DateTimeField(
-        'Дата публикации', auto_now_add=True
-    )
+        'Дата публикации', auto_now_add=True)
     score = models.IntegerField(
-        help_text="Оставьте оценку произведению в диапазоне от одного до десяти")
-	
+        verbose_name='Оценка',
+        null=True,
+        validators=[
+            MaxValueValidator(
+                limit_value=10,
+                message='Не более 10'
+            ),
+            MinValueValidator(
+                limit_value=1,
+                message='Не менее 1'
+            )
+        ],
+        help_text=(
+            'Оставьте оценку произведению в диапазоне от одного до десяти'
+        )
+    )
+
     def __str__(self):
         return self.text
 
     class Meta:
-        unique_together = ["title_id", "author"]
-        verbose_name = "Отзыв"
-        verbose_name_plural = "Отзывы"
+        ordering = ['pub_date']
+        unique_together = ['title_id', 'author']
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
 
 
 class Comment(models.Model):
     review_id = models.ForeignKey(
         Review,
-		on_delete=models.CASCADE,
-		related_name="comments"
+        on_delete=models.CASCADE,
+        related_name='comments'
     )
     text = models.TextField()
     author = models.ForeignKey(
         CustomUser,
-		on_delete=models.ForeignKey,
-		related_name="comments"
+        on_delete=models.CASCADE,
+        related_name='comments'
     )
     pub_date = models.DateTimeField(
         'Дата публикации',
-		auto_now_add=True
+        auto_now_add=True
     )
 
     def __str__(self):
         return self.text
 
     class Meta:
-        ordering = ["pub_date"]
-        verbose_name = "Комментарий"
-        verbose_name_plural = "Комментарии"
+        ordering = ['pub_date']
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
