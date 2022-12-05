@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    TitlesViewSet,
+    TitleViewSet,
     CategoriesViewSet,
     GenresViewSet,
     RegisterView,
@@ -15,7 +15,7 @@ from .views import (
 app_name = 'api'
 
 routerV1 = DefaultRouter()
-routerV1.register('titles', TitlesViewSet, basename='titles')
+routerV1.register('titles', TitleViewSet, basename='titles')
 routerV1.register('categories', CategoriesViewSet, basename='categories')
 routerV1.register('genres', GenresViewSet, basename='genres')
 routerV1.register('users', CustomUserViewSet)

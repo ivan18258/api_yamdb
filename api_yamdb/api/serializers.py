@@ -4,14 +4,13 @@ from rest_framework.validators import UniqueValidator
 # from rest_framework.validators import UniqueTogetherValidato
 
 from reviews.models import (
-Categories,
-Genres,
-Titles,
-CustomUser,
-Comment,
-Review,
+    Categories,
+    Genres,
+    Title,
+    CustomUser,
+    Comment,
+    Review,
 )
-
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,7 +48,7 @@ class TitlesSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category',)
-        model = Titles
+        model = Title
 
 class SingUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -122,10 +121,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if self.context['request'].method != 'POST':
             author = self.context['request'].user
-            title = self.context['view'].kwargs['title']
+            title_id = self.context['view'].kwargs['title_id']
         if Review.objects.filter(
             author=author,
-            title=title
+            title_id=title_id
         ).exists():
             raise serializers.ValidationError(
                 'Вы уже оставляли отзыв к этому произведению.'

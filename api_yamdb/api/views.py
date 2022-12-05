@@ -11,13 +11,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
 
 from .serializers import (
-    TitlesSerializer,
+    TitleSerializer,
     CategoriesSerializer,
     GenresSerializer,
     SingUpSerializer,
     TokenSerializer,
     CustomUserSerializer,
-    CustomUserEditSerializer,
+    CustomUserEditSerializer
     ReviewSerializer,
     CommentSerializer
 )
@@ -28,25 +28,23 @@ from .permissions import (
     AuthorAdminModeratorOrReadOnly
 )
 
-from reviews.models import(
-  Categories,
-  Genres,
-  Titles,
-  CustomUser,
-  Review,
-  Comment,
+from reviews.models import (
+    Categories,
+    Genres,
+    Title,
+    CustomUser,
+    Review,
+    Comment,
 )
 
 
-class TitlesViewSet(viewsets.ModelViewSet):
-    queryset = Titles.objects.all()
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly,)
-    serializer_class = TitlesSerializer
+    serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('year', 'category', 'genre', 'name')
     pagination_class = LimitOffsetPagination
-
-
     
 
 class CategoriesViewSet(viewsets.ModelViewSet):
@@ -147,30 +145,29 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title'))
+        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title'))
+        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
     def calculate_average_rating():
-        score = Review.objects.filter(score=True)
-        sum_of_raiting = 0
+        score = Review.objects.all()
+        sum_of_rating = 0
         count = 0
-        for score in score.reviews.all():
-            count += score.count()
-            sum_of_raiting += score
+        for s in score:
+            count += s.count()
+            sum_of_rating += s
         if count > 0:
-            raiting = round(sum_of_raiting / count)
-            return raiting
+            rating = round(sum_of_rating / count)
+            return rating
         else:
             return None
 

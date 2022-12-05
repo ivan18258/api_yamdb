@@ -6,7 +6,7 @@ from django.urls import reverse
 from .models import (
     Categories,
     Genres,
-    Titles,
+    Title,
     Review,
     CustomUser,
     Comment,)
@@ -28,7 +28,7 @@ pass
  
 
 def Titles_csv(fields):
-    Titles.objects.get_or_create(
+    Title.objects.get_or_create(
         id=int(fields[0]),
         name=fields[1],
         year=int(fields[2]),

@@ -1,5 +1,9 @@
 from rest_framework import permissions
 from reviews.models import CustomUser
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 
 class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
 
@@ -14,7 +18,11 @@ class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
             or request.user.role == CustomUser.ADMIN
+<<<<<<< HEAD
             or request.user.role ==CustomUser.MODERATOR
+=======
+            or request.user.role == CustomUser.MODERATOR
+>>>>>>> refs/remotes/origin/master
         )
 
 class IsAdmin(permissions.BasePermission):
