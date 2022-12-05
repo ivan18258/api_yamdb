@@ -80,3 +80,25 @@ def Comment_csv(fields):
                 
         )
     
+
+
+    """from rest_framework import renderers, parsers
+import io
+from api.serializers import CategorySerializer
+
+
+def csv_to_json(csv_file_path):
+    import csv
+
+    with open(csv_file_path, encoding="utf-8") as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+
+    return csv_reader
+
+categories_list = csv_to_json(r"./static/data/category.csv")
+
+serializer = CategorySerializer(data=categories_list, many=True)
+print(serializer.is_valid())
+# False
+
+print(serializer.validated_data)"""

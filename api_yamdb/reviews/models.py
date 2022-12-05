@@ -138,7 +138,7 @@ class Titles(models.Model):
 
 
 class Review(models.Model):
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Titles,
         on_delete=models.CASCADE,
         related_name='reviews'
@@ -174,13 +174,13 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['pub_date']
-        unique_together = ['title_id', 'author']
+        unique_together = ['title', 'author']
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
 
 class Comment(models.Model):
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments'

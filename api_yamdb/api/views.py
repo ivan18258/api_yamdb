@@ -17,7 +17,7 @@ from .serializers import (
     SingUpSerializer,
     TokenSerializer,
     CustomUserSerializer,
-    CustomUserEditSerializer
+    CustomUserEditSerializer,
     ReviewSerializer,
     CommentSerializer
 )
@@ -45,6 +45,8 @@ class TitlesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('year', 'category', 'genre', 'name')
     pagination_class = LimitOffsetPagination
+
+
     
 
 class CategoriesViewSet(viewsets.ModelViewSet):
@@ -52,13 +54,27 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriesSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
+    lookup_field = "slug"
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class GenresViewSet(viewsets.ModelViewSet):
-    queryset = Categories.objects.all()
+    queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
+    lookup_field = "slug"
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -138,11 +154,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Titles, id=self.kwargs.get('title'))
         serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Titles, id=self.kwargs.get('title'))
         return title.reviews.all()
 
     def calculate_average_rating():
@@ -165,10 +181,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review'))
         serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review'))
         return review.comments.all()
 
