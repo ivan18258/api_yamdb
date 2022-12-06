@@ -10,6 +10,7 @@ from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
 from django.db.models.functions import Round
+from rest_framework import filters
 
 from .serializers import (
     TitleSerializer,
@@ -45,9 +46,11 @@ class TitleViewSet(viewsets.ModelViewSet):
         rating=Round(Avg('reviews__score')))
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('year', 'category__slug',
     'genre__slug', 'name', 'genre__name', 'category__name',)
+    search_fields = ('name', 'genre', 'category')  
+
     pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
@@ -64,8 +67,9 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     lookup_field = "slug"
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
+    search_fields = ('name',) 
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -80,8 +84,9 @@ class GenresViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     lookup_field = "slug"
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
+    search_fields = ('name',) 
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
