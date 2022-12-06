@@ -20,7 +20,8 @@ class Command(BaseCommand):
             return
         print("Loading childrens data")
 
-        for row in DictReader(open('static/data/comments.csv', encoding="utf8")):
+        f = 'static/data/comments.csv'
+        for row in DictReader(open(f, encoding="utf8")):
             child = Comment(
                 id=row['id'],
                 review=Review.objects.get(id=row['review_id']),

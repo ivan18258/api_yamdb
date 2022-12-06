@@ -1,12 +1,14 @@
 from django.core.management.base import BaseCommand
-import os
-from api_yamdb.settings import BASE_DIR
+from django.core.management import call_command
 
 
 class Command(BaseCommand):
     help = 'Загрузка базы данных'
 
     def handle(self, *args, **kwargs):
-        os.system('E:/Dev/aaa/api_yamdb/api_yamdb/reviews/management/commands/upload_user.py')
-        # os.open(BASE_DIR, 'reviews/management/commands/upload_user.py')
-        # os.path.join(BASE_DIR, 'reviews/management/commands/upload_user.py')
+        call_command('upload_user')
+        call_command('upload_category')
+        call_command('upload_genres')
+        call_command('upload_titles')
+        call_command('upload_review')
+        call_command('upload_comments')

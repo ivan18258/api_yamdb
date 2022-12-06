@@ -88,12 +88,6 @@ class TitleSerializer(serializers.ModelSerializer):
             'category'
         )
 
-    # def to_representation(self, title):
-    #     """Определяет какой сериализатор
-    #     будет использоваться для чтения."""
-    #     serializer = TitleGETSerializer(title)
-    #     return serializer.data
-
 
 class SingUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
