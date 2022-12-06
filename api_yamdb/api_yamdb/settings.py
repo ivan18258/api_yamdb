@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'rest_framework',
     'django_filters',
-    'djoser',
+    # 'djoser',
 ]
 
 MIDDLEWARE = [
@@ -101,7 +101,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
-
 
 AUTH_USER_MODEL = 'reviews.CustomUser'
 

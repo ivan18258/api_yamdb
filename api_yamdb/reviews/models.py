@@ -50,6 +50,7 @@ class CustomUser(AbstractUser):
     )
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -129,7 +130,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        ordering = ("year",)
+        # ordering = ('year',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 

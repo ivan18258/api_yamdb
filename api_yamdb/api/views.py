@@ -8,7 +8,10 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import action
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import (
+    LimitOffsetPagination,
+    PageNumberPagination
+)
 from django.db.models.functions import Round
 from rest_framework import filters
 
@@ -30,15 +33,14 @@ from .permissions import (
     AuthorAdminModeratorOrReadOnly,
     AuthorAdminModeratorOrReadOnly
 )
-
 from reviews.models import (
     Categories,
     Genres,
     Title,
     CustomUser,
-    Review,
-    Comment,
+    Review
 )
+from .servise import TitlesFilter
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -47,10 +49,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_fields = ('year', 'category__slug',
-    'genre__slug', 'name', 'genre__name', 'category__name',)
-    search_fields = ('name', 'genre', 'category')  
-
+    filterset_class = TitlesFilter
+    search_fields = ('name', 'genre', 'category')
     pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
@@ -69,7 +69,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
-    search_fields = ('name',) 
+    search_fields = ('name',)
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -86,7 +86,7 @@ class GenresViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
-    search_fields = ('name',) 
+    search_fields = ('name',)
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -141,6 +141,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAdmin,)
+    pagination_class = PageNumberPagination
 
     @action(
         methods=["get", "patch"],
@@ -167,7 +168,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
@@ -181,14 +181,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs.get('review'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('review'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()

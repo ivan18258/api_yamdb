@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
+
 from reviews.models import (
     Categories,
     Genres,
@@ -79,14 +80,19 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = (
-           'id', 'name', 'year', 'description', 'genre', 'category'
+            'id',
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category'
         )
 
-    def to_representation(self, title):
-        """Определяет какой сериализатор
-        будет использоваться для чтения."""
-        serializer = TitleGETSerializer(title)
-        return serializer.data
+    # def to_representation(self, title):
+    #     """Определяет какой сериализатор
+    #     будет использоваться для чтения."""
+    #     serializer = TitleGETSerializer(title)
+    #     return serializer.data
 
 
 class SingUpSerializer(serializers.ModelSerializer):
@@ -133,16 +139,28 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "first_name",
-                  "last_name", "bio", "role")
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role"
+        )
 
 
 class CustomUserEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "first_name",
-                  "last_name", "bio", "role")
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role"
+        )
         read_only_fields = ('role',)
 
 
@@ -161,7 +179,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         author = self.context['request'].user
         title_id = self.context['view'].kwargs['title_id']
-        if self.context['request'].method != 'POST':
+        if self.context['request'].method == 'POST':
             if Review.objects.filter(
                 author=author,
                 title_id=title_id
@@ -182,4 +200,4 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        exclude = ('id',)
+        fields = '__all__'
