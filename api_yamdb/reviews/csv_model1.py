@@ -39,7 +39,6 @@ def Titles_csv(fields):
 pass
 
 
-
 def Review_csv(fields):
     Review.objects.get_or_create(
                 id=fields[0],
@@ -55,17 +54,13 @@ pass
 
 def CustomUser_csv(fields):
     CustomUser.objects.get_or_create(
-            #id=fields[0],
             username=fields[1],
             email=fields[2],
             role=fields[3],
             bio=fields[4],
             first_name=fields[5],
-            last_name=fields[6]
-            )
-#        question.save()
-   # pass
-
+            last_name=fields[6],
+        )
 
 
 def Comment_csv(fields):
@@ -75,12 +70,8 @@ def Comment_csv(fields):
         review_id=fields[1],
         text=fields[2],
         author=fields[3],
-            #score=fields[4],
         pub_date=fields[4],
-                
-        )
-    
-
+    )
 
     """from rest_framework import renderers, parsers
 import io

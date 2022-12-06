@@ -1,0 +1,16 @@
+"""from reviews.models import (
+    Title,
+    Review,
+)
+def calculate_average_rating():
+        score = Review.objects.all()
+        sum_of_rating = 0
+        count = 0
+        for s in score:
+            count += s.count()
+            sum_of_rating += s
+        if count > 0:
+            rating = round(sum_of_rating / count)
+            return rating
+        else:
+            return None"""

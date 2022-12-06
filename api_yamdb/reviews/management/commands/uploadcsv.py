@@ -3,7 +3,7 @@ import csv
 from reviews.models import (
     Categories,
     Genres,
-    Titles,
+    Title,
     Review,
     CustomUser,
     Comment,)
@@ -16,6 +16,7 @@ from reviews.csv_model import (
     CustomUser_csv,
     Comment_csv,
 )
+
 
 class Command(BaseCommand):
     help = 'загрузка бд тестовыми данными'
@@ -41,6 +42,5 @@ class Command(BaseCommand):
             list1=[]
             for row in reader:
                 list.append(Titles_csv(row))
-
-            Titles.objects.bulk_create(list1)
+            Title.objects.bulk_create(list1)
             print('обьекты '+list1)

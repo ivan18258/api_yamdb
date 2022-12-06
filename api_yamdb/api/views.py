@@ -6,9 +6,10 @@ from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import action
-# from rest_framework.permissions import AllowAny
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
+from django.db.models.functions import Round
 
 from .serializers import (
     TitleSerializer,
@@ -17,9 +18,10 @@ from .serializers import (
     SingUpSerializer,
     TokenSerializer,
     CustomUserSerializer,
-    CustomUserEditSerializer
+    CustomUserEditSerializer,
     ReviewSerializer,
-    CommentSerializer
+    CommentSerializer,
+    TitleGETSerializer
 )
 from .permissions import (
     IsAdmin,
@@ -39,13 +41,22 @@ from reviews.models import (
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Round(Avg('reviews__score')))
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('year', 'category', 'genre', 'name')
+    filterset_fields = ('year', 'category__slug',
+    'genre__slug', 'name', 'genre__name', 'category__name')
     pagination_class = LimitOffsetPagination
-    
+
+    def get_serializer_class(self):
+        """Определяет какой сериализатор будет использоваться
+        для разных типов запроса."""
+        if self.request.method == 'GET':
+            return TitleGETSerializer
+        return TitleSerializer
+
 
 class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
@@ -73,6 +84,7 @@ class GenresViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -151,25 +163,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
-        title = get_object_or_404(Titles, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
-
-    def calculate_average_rating():
-        score = Review.objects.all()
-        sum_of_rating = 0
-        count = 0
-        for s in score:
-            count += s.count()
-            sum_of_rating += s
-        if count > 0:
-            rating = round(sum_of_rating / count)
-            return rating
-        else:
-            return None
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -184,4 +183,3 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get('review'))
         return review.comments.all()
-

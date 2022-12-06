@@ -1,9 +1,6 @@
 from rest_framework import permissions
 from reviews.models import CustomUser
-<<<<<<< HEAD
-=======
 
->>>>>>> refs/remotes/origin/master
 
 class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
 
@@ -18,15 +15,11 @@ class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
             or request.user.role == CustomUser.ADMIN
-<<<<<<< HEAD
-            or request.user.role ==CustomUser.MODERATOR
-=======
             or request.user.role == CustomUser.MODERATOR
->>>>>>> refs/remotes/origin/master
         )
 
-class IsAdmin(permissions.BasePermission):
 
+class IsAdmin(permissions.BasePermission):
     message = 'У вас недостаточно прав!'
 
     def has_permission(self, request, view):
@@ -42,4 +35,3 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated and (
                     request.user.is_admin or request.user.is_superuser)))
-
