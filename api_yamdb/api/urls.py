@@ -34,6 +34,4 @@ urlpatterns = [
     path('v1/', include(routerV1.urls)),
     path('v1/auth/signup/', RegisterView.as_view()),
     path('v1/auth/token/', ReceivingJWTToken.as_view()),
-    # path('v1/', include('djoser.urls')),
-    # path('v1/', include('djoser.urls.jwt'))
 ]
