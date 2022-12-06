@@ -47,7 +47,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('year', 'category__slug',
-    'genre__slug', 'name', 'genre__name', 'category__name')
+    'genre__slug', 'name', 'genre__name', 'category__name',)
     pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
@@ -64,6 +64,8 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     lookup_field = "slug"
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name', 'slug',)
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -78,6 +80,8 @@ class GenresViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     lookup_field = "slug"
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name', 'slug',)
 
     def retrieve(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

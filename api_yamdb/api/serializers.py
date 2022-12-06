@@ -159,16 +159,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs['title_id']
         if self.context['request'].method != 'POST':
-            author = self.context['request'].user
-            title_id = self.context['view'].kwargs['title_id']
-        if Review.objects.filter(
-            author=author,
-            title_id=title_id
-        ).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставляли отзыв к этому произведению.'
-            )
+            if Review.objects.filter(
+                author=author,
+                title_id=title_id
+            ).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставляли отзыв к этому произведению.'
+                )
         return data
 
 
@@ -181,5 +181,5 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
         model = Comment
+        exclude = ('id',)
