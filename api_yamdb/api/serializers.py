@@ -131,6 +131,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         ]
     )
 
+    def validate_username(self, value):
+        if value.lower() == "me":
+            raise serializers.ValidationError(
+                "Username 'me' не может быть использован"
+            )
+        return value
+
     class Meta:
         model = CustomUser
         fields = (
