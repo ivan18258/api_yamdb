@@ -8,6 +8,16 @@ import datetime
 from django.contrib.auth.models import AbstractUser
 
 
+def validate_year(value):
+    now = datetime.datetime.now()
+    now_year = now.year
+    if value > int(now_year):
+        raise ValidationError(
+            ('Это произведение из будущего? Нет, не пойдет))'),
+            params={'value': value},
+        )
+
+
 class CustomUser(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -73,16 +83,6 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-def validate_year(value):
-    now = datetime.datetime.now()
-    now_year = now.year
-    if value > int(now_year):
-        raise ValidationError(
-            ('Это произведение из будущего? Нет, не пойдет))'),
-            params={'value': value},
-        )
-
-
 class Categories(models.Model):
     name = models.CharField('Категория', max_length=200)
     slug = models.SlugField(unique=True)
@@ -130,7 +130,6 @@ class Title(models.Model):
     )
 
     class Meta:
-        # ordering = ('year',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 

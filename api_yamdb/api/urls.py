@@ -29,9 +29,12 @@ routerV1.register(
     ReviewViewSet,
     basename='reviews'
 )
+auth = [
+path('signup/', RegisterView.as_view()),
+path('token/', ReceivingJWTToken.as_view()),
+]
 
 urlpatterns = [
     path('v1/', include(routerV1.urls)),
-    path('v1/auth/signup/', RegisterView.as_view()),
-    path('v1/auth/token/', ReceivingJWTToken.as_view()),
+    path('v1/auth/', include(auth))
 ]

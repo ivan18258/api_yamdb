@@ -40,7 +40,7 @@ from reviews.models import (
     CustomUser,
     Review
 )
-from .servise import TitlesFilter
+from .filters import TitlesFilter
 
 
 class TitleViewSet(viewsets.ModelViewSet):
