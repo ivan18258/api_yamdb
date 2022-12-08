@@ -1,11 +1,12 @@
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator
 )
-import datetime
 from django.contrib.auth.models import AbstractUser
+
+from api.validators import validate_username
+from .validators import validate_year
 
 
 class CustomUser(AbstractUser):
@@ -35,7 +36,8 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         'Имя пользователя',
         max_length=150,
-        unique=True
+        unique=True,
+        validators=[validate_username]
     )
     role = models.CharField(
         'Роль',
@@ -54,33 +56,20 @@ class CustomUser(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-        constraints = [
-            models.CheckConstraint(
-                check=~models.Q(username__iexact="me"),
-                name="username_is_not_me"
-            )
-        ]
-
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        return (
+            self.role == self.ADMIN
+            or self.is_superuser
+            or self.is_staff
+        )
 
     def __str__(self):
         return self.username
-
-
-def validate_year(value):
-    now = datetime.datetime.now()
-    now_year = now.year
-    if value > int(now_year):
-        raise ValidationError(
-            ('Это произведение из будущего? Нет, не пойдет))'),
-            params={'value': value},
-        )
 
 
 class Categories(models.Model):
@@ -130,7 +119,6 @@ class Title(models.Model):
     )
 
     class Meta:
-        # ordering = ('year',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 

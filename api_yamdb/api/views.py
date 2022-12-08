@@ -40,7 +40,7 @@ from reviews.models import (
     CustomUser,
     Review
 )
-from .servise import TitlesFilter
+from .filters import TitlesFilter
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -66,7 +66,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriesSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    lookup_field = "slug"
+    lookup_field = 'slug'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
     search_fields = ('name',)
@@ -83,7 +83,7 @@ class GenresViewSet(viewsets.ModelViewSet):
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    lookup_field = "slug"
+    lookup_field = 'slug'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name', 'slug',)
     search_fields = ('name',)
@@ -96,7 +96,7 @@ class GenresViewSet(viewsets.ModelViewSet):
 
 
 class RegisterView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
         serializer = SingUpSerializer(data=request.data)
@@ -104,47 +104,47 @@ class RegisterView(APIView):
         serializer.save()
         user = get_object_or_404(
             CustomUser,
-            username=serializer.validated_data["username"]
+            username=serializer.validated_data['username']
         )
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
-            subject="Confirmation code",
-            message=f"Ваш код подтверждения: {confirmation_code}",
-            from_email=None,
+            subject='Confirmation code',
+            message=f'Ваш код подтверждения: {confirmation_code}',
+            from_email='yamdb@yandex.com',
             recipient_list=[user.email],
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ReceivingJWTToken(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = get_object_or_404(
             CustomUser,
-            username=serializer.validated_data["username"]
+            username=serializer.validated_data['username']
         )
 
         if default_token_generator.check_token(
-            user, serializer.validated_data["confirmation_code"]
+            user, serializer.validated_data['confirmation_code']
         ):
             token = AccessToken.for_user(user)
-            return Response({"token": str(token)}, status=status.HTTP_200_OK)
+            return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
-    lookup_field = "username"
+    lookup_field = 'username'
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAdmin,)
     pagination_class = PageNumberPagination
 
     @action(
-        methods=["get", "patch"],
+        methods=['get', 'patch'],
         detail=False,
         url_path="me",
         serializer_class=CustomUserEditSerializer,
@@ -152,10 +152,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def profile(self, request):
         user = request.user
-        if request.method == "GET":
-            serializer = self.get_serializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.method == "PATCH":
+        if request.method == 'PATCH':
             serializer = self.get_serializer(
                 user,
                 data=request.data,
@@ -164,7 +161,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
