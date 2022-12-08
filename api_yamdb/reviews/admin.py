@@ -9,41 +9,40 @@ class TitlesAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-# class CustomUserAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'username',
-#         'role',
-#         'email',
-#         'first_name',
-#         'last_name',
-#         'bio'
-#     )
-#     search_fields = ('username',)
-#     list_per_page = 10
-#     list_filter = (
-#         'username',
-#         'role',
-#         'email',
-#         'bio'
-#     )
-#     fieldsets = (
-#         (None, {
-#             'fields': (
-#                 'username',
-#                 'role',
-#                 'email',
-#                 'first_name',
-#                 'last_name',
-#                 'bio'
-#             )
-#         }),
-#     )
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = (
+        'username',
+        'role',
+        'email',
+        'first_name',
+        'last_name',
+        'bio'
+    )
+    search_fields = ('username',)
+    list_per_page = 10
+    list_filter = (
+        'username',
+        'role',
+        'email',
+        'bio'
+    )
+    fieldsets = (
+        (None, {
+            'fields': (
+                'username',
+                'role',
+                'email',
+                'first_name',
+                'last_name',
+                'bio'
+            )
+        }),
+    )
 
 
-# admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Title, TitlesAdmin)
 admin.site.register(Genres)
 admin.site.register(Categories)
 admin.site.register(Review)
 admin.site.register(Comment)
-admin.site.register(CustomUser)
