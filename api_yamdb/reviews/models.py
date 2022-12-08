@@ -130,7 +130,6 @@ class Title(models.Model):
     )
 
     class Meta:
-        # ordering = ('year',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
@@ -138,20 +137,31 @@ class Title(models.Model):
         return self.name[:15]
 
 
-class Review(models.Model):
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
+class BaseReviewComment(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='reviews'
+        related_name='%(class)s'
     )
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True)
+    
+    class Meta:
+        abstract = True
+        ordering = ['pub_date']
+
+    def __str__(self):
+        return self.text
+
+
+class Review(BaseReviewComment):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews'  
+    )
+
     score = models.IntegerField(
         verbose_name='Оценка',
         null=True,
@@ -170,37 +180,20 @@ class Review(models.Model):
         )
     )
 
-    def __str__(self):
-        return self.text
-
     class Meta:
-        ordering = ['pub_date']
         unique_together = ['title', 'author']
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
 
-class Comment(models.Model):
+class Comment(BaseReviewComment):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments'
     )
-    text = models.TextField()
-    author = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    pub_date = models.DateTimeField(
-        'Дата публикации',
-        auto_now_add=True
-    )
 
-    def __str__(self):
-        return self.text
 
     class Meta:
-        ordering = ['pub_date']
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
