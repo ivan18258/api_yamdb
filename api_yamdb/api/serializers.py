@@ -10,6 +10,7 @@ from reviews.models import (
     Comment,
     Review,
 )
+from .validators import validate_username
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -92,7 +93,8 @@ class TitleSerializer(serializers.ModelSerializer):
 class SingUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
-            UniqueValidator(queryset=CustomUser.objects.all())
+            UniqueValidator(queryset=CustomUser.objects.all()),
+            validate_username
         ]
     )
     email = serializers.EmailField(
@@ -101,27 +103,24 @@ class SingUpSerializer(serializers.ModelSerializer):
         ]
     )
 
-    def validate_username(self, value):
-        if value.lower() == "me":
-            raise serializers.ValidationError(
-                "Username 'me' использовать нельзя"
-            )
-        return value
-
     class Meta:
         model = CustomUser
         fields = ('username', 'email')
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    confirmation_code = serializers.CharField()
+    username = serializers.CharField(
+        max_length=150,
+        validators=[validate_username]
+    )
+    confirmation_code = serializers.CharField(max_length=150)
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
-            UniqueValidator(queryset=CustomUser.objects.all())
+            UniqueValidator(queryset=CustomUser.objects.all()),
+            validate_username
         ],
         required=True,
     )
@@ -130,13 +129,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             UniqueValidator(queryset=CustomUser.objects.all())
         ]
     )
-
-    def validate_username(self, value):
-        if value.lower() == "me":
-            raise serializers.ValidationError(
-                "Username 'me' не может быть использован"
-            )
-        return value
 
     class Meta:
         model = CustomUser

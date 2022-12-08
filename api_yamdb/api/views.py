@@ -40,7 +40,7 @@ from reviews.models import (
     CustomUser,
     Review
 )
-from .servise import TitlesFilter
+from .filters import TitlesFilter
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -110,7 +110,7 @@ class RegisterView(APIView):
         send_mail(
             subject="Confirmation code",
             message=f"Ваш код подтверждения: {confirmation_code}",
-            from_email=None,
+            from_email='yamdb@yandex.com',
             recipient_list=[user.email],
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -152,9 +152,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def profile(self, request):
         user = request.user
-        if request.method == "GET":
-            serializer = self.get_serializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
         if request.method == "PATCH":
             serializer = self.get_serializer(
                 user,
@@ -164,7 +161,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
