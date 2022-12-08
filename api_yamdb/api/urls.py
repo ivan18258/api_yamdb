@@ -30,8 +30,8 @@ routerV1.register(
     basename='reviews'
 )
 auth = [
-path('signup/', RegisterView.as_view()),
-path('token/', ReceivingJWTToken.as_view()),
+    path('signup/', RegisterView.as_view()),
+    path('token/', ReceivingJWTToken.as_view()),
 ]
 
 urlpatterns = [

@@ -78,7 +78,7 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Categories.objects.all()
     )
-   
+
     def validate_year(self, value):
         now = datetime.datetime.now()
         now_year = now.year
@@ -86,7 +86,7 @@ class TitleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 ('Это произведение из будущего? Нет, не пойдет))'),
                 params={'value': value},
-        )
+            )
         return value
 
     class Meta:
@@ -183,16 +183,15 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not self.context['request'].method == 'POST':
             return data
-        else:
-            author = self.context['request'].user
-            title_id = self.context['view'].kwargs['title_id']
-            if Review.objects.filter(
-                author=author,
-                title_id=title_id
-            ).exists():
-                raise serializers.ValidationError(
-                    'Вы уже оставляли отзыв к этому произведению.'
-                )
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs['title_id']
+        if Review.objects.filter(
+            author=author,
+            title_id=title_id
+        ).exists():
+            raise serializers.ValidationError(
+                'Вы уже оставляли отзыв к этому произведению.'
+            )
         return data
 
 
