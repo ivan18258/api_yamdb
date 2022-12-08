@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
@@ -77,6 +78,16 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Categories.objects.all()
     )
+   
+    def validate_year(self, value):
+        now = datetime.datetime.now()
+        now_year = now.year
+        if value > int(now_year):
+            raise serializers.ValidationError(
+                ('Это произведение из будущего? Нет, не пойдет))'),
+                params={'value': value},
+        )
+        return value
 
     class Meta:
         model = Title

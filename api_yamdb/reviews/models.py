@@ -9,6 +9,16 @@ from api.validators import validate_username
 from .validators import validate_year
 
 
+def validate_year(value):
+    now = datetime.datetime.now()
+    now_year = now.year
+    if value > int(now_year):
+        raise ValidationError(
+            ('Это произведение из будущего? Нет, не пойдет))'),
+            params={'value': value},
+        )
+
+
 class CustomUser(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
