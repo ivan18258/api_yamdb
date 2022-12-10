@@ -14,6 +14,7 @@ from rest_framework.pagination import (
 )
 from django.db.models.functions import Round
 from rest_framework import filters
+from django.conf import settings
 
 from .serializers import (
     TitleSerializer,
@@ -101,17 +102,14 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = SingUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        user = get_object_or_404(
-            CustomUser,
-            username=serializer.validated_data['username']
-        )
+        user, _ = CustomUser.objects.get_or_create(**serializer.validated_data)
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Confirmation code',
             message=f'Ваш код подтверждения: {confirmation_code}',
-            from_email='yamdb@yandex.com',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
+            fail_silently=False,
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
