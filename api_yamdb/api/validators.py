@@ -1,5 +1,4 @@
 import re
-from django.core.validators import validate_email
 
 from rest_framework import serializers
 
@@ -16,23 +15,23 @@ def validate_username(value):
         raise serializers.ValidationError(
             "Username 'me' использовать нельзя"
         )
-    if reviews.models.CustomUser.objects.filter(username=value).exists():
-        raise serializers.ValidationError(
-            'Это имя уже использовано'
-        )
     return value
 
 
-def validate_emaill(value):
+def validate_emaill_username(value):
     """Проверка email на валидность."""
-    if reviews.models.CustomUser.objects.filter(email=value).exists():
+    email = value['email']
+    username = value['username']
+    a = reviews.models.CustomUser.objects.filter(email=email).exists()
+    b = reviews.models.CustomUser.objects.filter(
+        username=username).exists()
+    c = reviews.models.CustomUser.objects.filter(
+        username=value['username'], email=value['email']).exists()
+    if (a or b) and not c:
+
         raise serializers.ValidationError(
-            'Этот email уже использовано'
+            f'email {email} или username: {username} уже заняты'
+            f', введите корректные данные, или'
+            f'зарегистрируйтесь заново'
         )
-    # try:
-    #     validate_email(value)
-    # except serializers.ValidationError as error:
-    #     raise serializers.ValidationError(
-    #         f'Email не валидно: {error}'
-    #     )
     return value
