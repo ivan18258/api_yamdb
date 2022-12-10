@@ -3,6 +3,8 @@ from django.core.validators import validate_email
 
 from rest_framework import serializers
 
+import reviews.models
+
 
 def validate_username(value):
     regex = r'^[\w.@+-]+$'
@@ -14,15 +16,23 @@ def validate_username(value):
         raise serializers.ValidationError(
             "Username 'me' использовать нельзя"
         )
+    if reviews.models.CustomUser.objects.filter(username=value).exists():
+        raise serializers.ValidationError(
+            'Это имя уже использовано'
+        )
     return value
 
 
-def validate_emailll(value):
+def validate_emaill(value):
     """Проверка email на валидность."""
-    try:
-        validate_email(value)
-    except serializers.ValidationError as error:
+    if reviews.models.CustomUser.objects.filter(email=value).exists():
         raise serializers.ValidationError(
-            f'Email не валидно: {error}'
+            'Этот email уже использовано'
         )
+    # try:
+    #     validate_email(value)
+    # except serializers.ValidationError as error:
+    #     raise serializers.ValidationError(
+    #         f'Email не валидно: {error}'
+    #     )
     return value

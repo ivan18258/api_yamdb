@@ -109,6 +109,7 @@ class RegisterView(APIView):
             message=f'Ваш код подтверждения: {confirmation_code}',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
+            fail_silently=False,
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -11,7 +11,7 @@ from reviews.models import (
     Comment,
     Review,
 )
-from .validators import validate_username, validate_email
+from .validators import validate_username, validate_emaill
 
 
 class GenresSerializer(serializers.ModelSerializer):
@@ -107,9 +107,10 @@ class TitleSerializer(serializers.ModelSerializer):
 class SingUpSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=150,
-        validators=[validate_username]
+        validators=[
+            validate_username]
     )
-    email = serializers.EmailField()
+    email = serializers.EmailField(validators=[validate_emaill])
 
     # class Meta:
     #     model = CustomUser
