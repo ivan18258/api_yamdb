@@ -116,9 +116,7 @@ class RegisterView(APIView):
                 **serializer.validated_data)
         except IntegrityError:
             raise serializers.ValidationError(
-                f'Email или username уже заняты'
-                f', введите корректные данные, или'
-                f' зарегистрируйтесь заново'
+                'Не верный адрес или логин'
             )
 
         confirmation_code = default_token_generator.make_token(user)
