@@ -43,6 +43,8 @@ from reviews.models import (
 )
 from .filters import TitlesFilter
 
+from django.db import IntegrityError
+from rest_framework import serializers
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(
@@ -95,6 +97,10 @@ class GenresViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+class WrongUsernameOrEmail(Exception):
+    """Email или username уже заняты."""
+
+    pass
 
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
@@ -102,7 +108,15 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = SingUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, _ = CustomUser.objects.get_or_create(**serializer.validated_data)
+        try:
+            user, _ = CustomUser.objects.get_or_create(**serializer.validated_data)
+        except IntegrityError:
+            raise serializers.ValidationError(
+                f'Email или username уже заняты'
+                f', введите корректные данные, или'
+                f' зарегистрируйтесь заново'
+            )
+
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Confirmation code',
