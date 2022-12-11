@@ -108,10 +108,6 @@ class SingUpSerializer(serializers.Serializer):
     )
     email = serializers.EmailField()
 
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'email')
-
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
