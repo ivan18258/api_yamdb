@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 
 
 def validate_year(value):
+    """ Проверка даты выхода произведения. """
     now = datetime.datetime.now()
     now_year = now.year
     if value > int(now_year):

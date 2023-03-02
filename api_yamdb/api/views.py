@@ -32,7 +32,6 @@ from .permissions import (
     IsAdmin,
     IsAdminOrReadOnly,
     AuthorAdminModeratorOrReadOnly,
-    AuthorAdminModeratorOrReadOnly
 )
 from reviews.models import (
     Categories,
@@ -48,6 +47,8 @@ from rest_framework import serializers
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """ Произведения. Рейтинг вычисляется на 'лету'.
+    Досттуп для изменения - админ. Доступ для чтения - все"""
     queryset = Title.objects.annotate(
         rating=Round(Avg('reviews__score')))
     permission_classes = (IsAdminOrReadOnly,)
@@ -66,6 +67,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
+    """ Категории. Досттуп для изменения - админ
+     Доступ для чтения - все. """
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -83,6 +86,8 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 
 
 class GenresViewSet(viewsets.ModelViewSet):
+    """ Жанры. Досттуп для изменения - админ
+     Доступ для чтения - все. """
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -106,6 +111,7 @@ class WrongUsernameOrEmail(Exception):
 
 
 class RegisterView(APIView):
+    """ Самостоятельная регистрация пользователя. """
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
@@ -131,6 +137,7 @@ class RegisterView(APIView):
 
 
 class ReceivingJWTToken(APIView):
+    """ Авторизация по токену. """
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
@@ -151,6 +158,7 @@ class ReceivingJWTToken(APIView):
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
+    """ Пользователи, доступ для админа. """
     lookup_field = 'username'
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -165,6 +173,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def profile(self, request):
+        """ Выбор типа запроса. """
         user = request.user
         if request.method == 'PATCH':
             serializer = self.get_serializer(
@@ -180,28 +189,36 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """ Отзывы. Доступ на изменение - автор, администратор,
+    модератор. Чтение - все. """
     serializer_class = ReviewSerializer
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
+        """ Выбор создания или изменения. """
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
+        """ Данные при GET запросе. """
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """ Коментарии. Доступ на изменение - автор, администратор,
+    модератор. Чтение - все. """
     serializer_class = CommentSerializer
     permission_classes = (AuthorAdminModeratorOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
+        """ Выбор создания или изменения. """
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
 
     def get_queryset(self):
+        """ Данные при GET запросе. """
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()

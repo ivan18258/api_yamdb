@@ -48,7 +48,7 @@
 > https://github.com/ivan18258/api_yamdb.git
 
     
-> Cоздать и активировать виртуальное окружен
+> Cоздать и активировать виртуальное окружение
 
 > python manage.py runserver
 

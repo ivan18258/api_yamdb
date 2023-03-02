@@ -10,6 +10,7 @@ from .validators import validate_year
 
 
 class CustomUser(AbstractUser):
+    """ Модель пользователя. """
     ADMIN = 'admin'
     MODERATOR = 'moderator'
     USER = 'user'
@@ -126,6 +127,7 @@ class Title(models.Model):
 
 
 class BaseReviewComment(models.Model):
+    """ Базовая модель коментария и отзывов. """
     text = models.TextField()
     author = models.ForeignKey(
         CustomUser,
@@ -144,6 +146,7 @@ class BaseReviewComment(models.Model):
 
 
 class Review(BaseReviewComment):
+    """ Модель отзыва. """
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -175,6 +178,7 @@ class Review(BaseReviewComment):
 
 
 class Comment(BaseReviewComment):
+    """ Модель коментария"""
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,

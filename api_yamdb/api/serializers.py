@@ -15,6 +15,7 @@ from .validators import validate_username
 
 
 class GenresSerializer(serializers.ModelSerializer):
+    """ Сериализация жанра. """
     class Meta:
         fields = ('name', 'slug',)
         lookup_field = 'slug'
@@ -25,6 +26,7 @@ class GenresSerializer(serializers.ModelSerializer):
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
+    """ Сериализация категории. """
     class Meta:
         fields = ('name', 'slug',)
         lookup_field = 'slug'
@@ -35,12 +37,14 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 
 class CategoryField(SlugRelatedField):
+    """ Подготовка поля 'Категории' для сериализации"""
     def to_representation(self, value):
         serializer = CategoriesSerializer(value)
         return serializer.data
 
 
 class GenreField(SlugRelatedField):
+    """ Подготовка поля 'Жанр' для сериализации"""
     def to_representation(self, value):
         serializer = GenresSerializer(value)
         return serializer.data
@@ -80,6 +84,7 @@ class TitleSerializer(serializers.ModelSerializer):
     )
 
     def validate_year(self, value):
+        """ Валидация года выпуска произведения. """
         now = datetime.datetime.now()
         now_year = now.year
         if value > int(now_year):
@@ -102,6 +107,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class SingUpSerializer(serializers.Serializer):
+    """ Валидация полей модели кастомного пользователя"""
     username = serializers.CharField(
         max_length=150,
         validators=[validate_username]
@@ -110,6 +116,7 @@ class SingUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
+    """ Сериализация аутентификации"""
     username = serializers.CharField(
         max_length=150,
         validators=[validate_username]
@@ -118,6 +125,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    """ Сериализация кастомного пользователя"""
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=CustomUser.objects.all()),
@@ -144,7 +152,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CustomUserEditSerializer(serializers.ModelSerializer):
-
+    """ Сериализация кастомного пользователя (регистрация)"""
     class Meta:
         model = CustomUser
         fields = (
@@ -159,6 +167,7 @@ class CustomUserEditSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """ Сериализация отзыва. """
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
@@ -171,6 +180,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
+        """ Проверка наличия отзыва от данного пользователя. """
         if not self.context['request'].method == 'POST':
             return data
         author = self.context['request'].user
@@ -186,6 +196,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """ Сериализация коментариев к отзыву. """
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )

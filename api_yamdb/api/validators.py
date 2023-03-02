@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 
 def validate_username(value):
+    """ Валидатор имени пользователя. """
     regex = r'^[\w.@+-]+$'
     if re.match(regex, value) is None:
         raise serializers.ValidationError(

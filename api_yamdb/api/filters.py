@@ -8,6 +8,7 @@ class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
 
 
 class TitlesFilter(filters.FilterSet):
+    """ Фильтр для полей модели 'Произведения'"""
     name = filters.CharFilter(
         field_name='name',
         lookup_expr='icontains'
